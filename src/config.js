@@ -3,7 +3,7 @@ export const CONFIG = {
   baseSize: 4.2,        // footprint of the ground floor (x and z)
   foundationFloors: 3,  // floors already standing when a run starts
   floorHeight: 0.78,    // height of a single floor
-  carryGap: 0.6,        // how high above the tower the next floor slides in
+  carryGap: 0.15,       // clearance between the sliding floor and the roof
 
   startSpeed: 1.6,      // sideways speed of the carried floor, units/second
   speedGain: 0.06,      // extra speed per completed floor

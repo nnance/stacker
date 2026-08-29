@@ -20,7 +20,7 @@ function createLandingGuide() {
     new THREE.MeshBasicMaterial({
       color: 0x6ee7ff,
       transparent: true,
-      opacity: 0.3,
+      opacity: 0.2,
       depthTest: false,
       depthWrite: false,
       blending: THREE.AdditiveBlending
@@ -119,7 +119,7 @@ export class Game {
     for (let i = 0; i < CONFIG.foundationFloors; i++) {
       this.addFloor(0, 0, CONFIG.baseSize, CONFIG.baseSize, i * CONFIG.floorHeight);
     }
-    this.focus.set(0, this.topFloor().y + 2.2, 0);
+    this.focus.set(0, this.topFloor().y + 1.7, 0);
     this.snapCamera();
     this.hud.setScore(0);
   }
@@ -440,7 +440,7 @@ export class Game {
   updateCamera(dt) {
     const top = this.topFloor();
     const pullBack = this.state === 'over' ? 1.16 : 1;
-    const targetY = top.y + 2.2;
+    const targetY = top.y + 1.7;
 
     this.focus.x += (top.cx * 0.55 - this.focus.x) * Math.min(1, dt * 3);
     this.focus.z += (top.cz * 0.55 - this.focus.z) * Math.min(1, dt * 3);

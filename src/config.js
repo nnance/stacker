@@ -5,7 +5,7 @@ export const CONFIG = {
   floorHeight: 0.78,    // height of a single floor
   carryGap: 0.6,        // how high above the tower the next floor slides in
 
-  startSpeed: 3.2,      // sideways speed of the carried floor, units/second
+  startSpeed: 1.6,      // sideways speed of the carried floor, units/second
   speedGain: 0.06,      // extra speed per completed floor
   maxSpeed: 9.5,
 

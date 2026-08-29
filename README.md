@@ -36,8 +36,8 @@ relative so it can be hosted from any subdirectory) and check it with
   recover.
 - **Missing** — if a drop has no overlap at all, the floor falls past the tower
   and the run ends.
-- **Difficulty** — the carried floor moves faster the taller the tower gets, up
-  to a cap, and it always swings along an axis alternating between X and Z.
+- **Difficulty** — the floor slides in slowly at first and speeds up with every
+  floor placed, up to a cap, always along an axis alternating between X and Z.
 
 ## Source layout
 

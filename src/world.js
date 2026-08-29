@@ -1,6 +1,28 @@
 import * as THREE from 'three';
 import { CONFIG } from './config.js';
 
+// Narrowest lens the game uses; it widens only when a screen is too narrow to
+// fit the play area from a sensible distance.
+const MIN_HALF_FOV = THREE.MathUtils.degToRad(17);
+const MAX_HALF_FOV = THREE.MathUtils.degToRad(30);
+const PREFERRED_DISTANCE = 26;
+
+// A low, near-corner view, matching the arcade cabinet: the roof is only just
+// visible, so a floor in mid-air sits almost straight above the one below it
+// on screen and lining the two up is a matter of reading their side edges.
+const CAMERA_ELEVATION = THREE.MathUtils.degToRad(15);
+const CAMERA_AZIMUTH = Math.PI / 4;
+const CAMERA_DIRECTION = new THREE.Vector3(
+  Math.cos(CAMERA_ELEVATION) * Math.sin(CAMERA_AZIMUTH),
+  Math.sin(CAMERA_ELEVATION),
+  Math.cos(CAMERA_ELEVATION) * Math.cos(CAMERA_AZIMUTH)
+);
+
+// World-space box the camera has to keep in shot around the top of the tower:
+// wide enough for a floor sliding out to the end of its travel.
+const FRAME_WIDTH = 13.5;
+const FRAME_HEIGHT = 12;
+
 /** Renderer, camera, lights and the static scenery the tower is built on. */
 export function createWorld(canvas) {
   const renderer = new THREE.WebGLRenderer({
@@ -18,8 +40,10 @@ export function createWorld(canvas) {
   const scene = new THREE.Scene();
   scene.fog = new THREE.Fog(0x0d1430, 26, 54);
 
-  const camera = new THREE.PerspectiveCamera(36, 1, 0.5, 240);
-  const CAMERA_OFFSET = new THREE.Vector3(15.5, 11, 15.5);
+  const camera = new THREE.PerspectiveCamera(34, 1, 0.5, 240);
+  // Filled in by resize(): direction is fixed, distance is whatever it takes
+  // to fit the play area on the screen at hand.
+  const cameraOffset = new THREE.Vector3();
 
   scene.add(new THREE.HemisphereLight(0x9fc4ff, 0x1b2140, 1.5));
 
@@ -64,7 +88,7 @@ export function createWorld(canvas) {
 
   scene.add(createStars());
 
-  return { renderer, scene, camera, cameraOffset: CAMERA_OFFSET, key, ground };
+  return { renderer, scene, camera, cameraOffset, key, ground };
 }
 
 function createStars() {
@@ -89,12 +113,29 @@ function createStars() {
   return stars;
 }
 
-export function resize(renderer, camera) {
+/**
+ * Fits the play area on screen by moving the camera along a fixed viewing
+ * direction, widening the lens only for screens too narrow to manage from a
+ * sensible distance. The arcade angle survives everything from a phone in
+ * portrait to a wide desktop window.
+ */
+export function resize({ renderer, camera, cameraOffset }) {
   const width = window.innerWidth;
   const height = window.innerHeight;
   renderer.setSize(width, height, false);
   camera.aspect = width / height;
-  // Pull back a little on tall/narrow phone screens so the tower still fits.
-  camera.fov = camera.aspect < 0.72 ? 48 : 36;
+
+  // Widen the lens only as far as this screen shape demands, then back the
+  // camera off by however much that lens needs to frame the play area.
+  const wanted = Math.atan(FRAME_WIDTH / 2 / PREFERRED_DISTANCE / camera.aspect);
+  const halfV = THREE.MathUtils.clamp(wanted, MIN_HALF_FOV, MAX_HALF_FOV);
+  camera.fov = THREE.MathUtils.radToDeg(halfV * 2);
   camera.updateProjectionMatrix();
+
+  const halfH = Math.atan(Math.tan(halfV) * camera.aspect);
+  const distance = Math.max(
+    FRAME_WIDTH / 2 / Math.tan(halfH),
+    FRAME_HEIGHT / 2 / Math.tan(halfV)
+  );
+  cameraOffset.copy(CAMERA_DIRECTION).multiplyScalar(distance);
 }

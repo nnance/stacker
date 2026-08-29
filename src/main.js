@@ -16,8 +16,8 @@ if (import.meta.env.DEV) {
   window.__game = game; // handy for poking at the sim while developing
 }
 
-resize(world.renderer, world.camera);
-window.addEventListener('resize', () => resize(world.renderer, world.camera));
+resize(world);
+window.addEventListener('resize', () => resize(world));
 
 // ------------------------------------------------------------------- input
 

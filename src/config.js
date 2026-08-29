@@ -3,7 +3,7 @@ export const CONFIG = {
   baseSize: 4.2,        // footprint of the ground floor (x and z)
   foundationFloors: 3,  // floors already standing when a run starts
   floorHeight: 0.78,    // height of a single floor
-  carryGap: 2.4,        // how high above the tower the UFO carries the next floor
+  carryGap: 1.2,        // how high above the tower the UFO carries the next floor
 
   startSpeed: 3.2,      // sideways speed of the carried floor, units/second
   speedGain: 0.06,      // extra speed per completed floor

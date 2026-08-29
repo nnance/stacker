@@ -159,7 +159,9 @@ export class Game {
     const travel = travelFor(size);
     const direction = Math.random() < 0.5 ? 1 : -1;
 
-    const mesh = this.factory.create(top.w, CONFIG.floorHeight, top.d, this.floors.length);
+    const mesh = this.factory.create(top.w, CONFIG.floorHeight, top.d, this.floors.length, {
+      plain: true
+    });
     mesh.position.set(top.cx, top.y + CONFIG.floorHeight + CONFIG.carryGap, top.cz);
     mesh.position[axis] = centre - direction * travel;
     this.tower.add(mesh);
@@ -254,7 +256,9 @@ export class Game {
 
     const width = axis === 'x' ? cut : this.moving.w;
     const depth = axis === 'x' ? this.moving.d : cut;
-    const mesh = this.factory.create(width, CONFIG.floorHeight, depth, this.floors.length - 1);
+    const mesh = this.factory.create(width, CONFIG.floorHeight, depth, this.floors.length - 1, {
+      plain: true
+    });
     mesh.position.set(this.moving.mesh.position.x, y, this.moving.mesh.position.z);
     mesh.position[axis] = position;
     this.debrisGroup.add(mesh);

@@ -31,10 +31,14 @@ export class FloorFactory {
     this.textures = textures;
   }
 
-  /** Builds a single slab of building: lit facade on the sides, roof on top. */
-  create(width, height, depth, index) {
+  /**
+   * Builds a single slab of building: lit facade on the sides, roof on top.
+   * A plain slab is one still in transit — bare concrete, no windows or doors
+   * until it has been dropped into place.
+   */
+  create(width, height, depth, index, { plain = false } = {}) {
     const geometry = new THREE.BoxGeometry(width, height, depth);
-    tileUVs(geometry, width, depth, height);
+    if (!plain) tileUVs(geometry, width, depth, height);
 
     const variant = this.textures.facades[index % this.textures.facades.length];
     const color = new THREE.Color().setHSL(
@@ -43,15 +47,21 @@ export class FloorFactory {
       0.56
     );
 
-    const wall = new THREE.MeshStandardMaterial({
-      color,
-      map: variant.map,
-      emissive: 0xffffff,
-      emissiveMap: variant.emissive,
-      emissiveIntensity: 1.1,
-      roughness: 0.72,
-      metalness: 0.05
-    });
+    const wall = plain
+      ? new THREE.MeshStandardMaterial({
+          color: color.clone().lerp(new THREE.Color(0xffffff), 0.12),
+          roughness: 0.8,
+          metalness: 0.03
+        })
+      : new THREE.MeshStandardMaterial({
+          color,
+          map: variant.map,
+          emissive: 0xffffff,
+          emissiveMap: variant.emissive,
+          emissiveIntensity: 1.1,
+          roughness: 0.72,
+          metalness: 0.05
+        });
 
     const roof = new THREE.MeshStandardMaterial({
       color: color.clone().multiplyScalar(0.82),

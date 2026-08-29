@@ -25,6 +25,8 @@ relative so it can be hosted from any subdirectory) and check it with
 - **Drop a floor** — click, tap, or press <kbd>Space</kbd>.
 - **Scoring** — 1 point per floor placed. The run is endless; your best score is
   kept in `localStorage`.
+- **Bare until placed** — a floor in transit is plain concrete; its windows and
+  doors light up only once it is dropped into place.
 - **Slicing** — the overlap between the carried floor and the one below it
   becomes the new floor. The overhang is cut loose and falls away, so a sloppy
   drop makes the tower narrower and every later drop harder.

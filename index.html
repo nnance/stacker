@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#080d1c" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <title>Stacker — build the tower</title>
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="scene"></canvas>
+
+      <div id="hud">
+        <div id="score">0</div>
+        <div id="best">BEST 0</div>
+        <div id="combo"></div>
+      </div>
+
+      <div id="start" class="overlay">
+        <h1>STACKER</h1>
+        <p class="sub">Drop each floor onto the one below.<br />Overhang gets sliced off. Miss and it's over.</p>
+        <p class="cta">Click, tap or press <kbd>Space</kbd> to start</p>
+      </div>
+
+      <div id="gameover" class="overlay hidden">
+        <h2>TOPPED OUT</h2>
+        <p class="final"><span id="final-score">0</span> <small>floors</small></p>
+        <p id="record" class="record hidden">New record!</p>
+        <p class="cta">Click, tap or press <kbd>Space</kbd> to rebuild</p>
+      </div>
+
+      <div id="hint">Tap to drop</div>
+      <button id="sound" type="button" aria-label="Toggle sound">SOUND ON</button>
+    </div>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

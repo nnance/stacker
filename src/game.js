@@ -5,6 +5,52 @@ import { createUfo } from './ufo.js';
 
 const AXES = ['x', 'z'];
 
+/**
+ * Outline of the footprint a drop would keep. The camera looks down at an
+ * angle, so a floor in mid-air never lines up on screen with the one below it;
+ * this traces the real landing spot instead. Drawn over the top of everything
+ * (the sliding floor would otherwise hide it) and it shrinks as the drop drifts
+ * off centre, so the player just keeps it as wide as they can.
+ */
+function createLandingGuide() {
+  const guide = new THREE.Group();
+
+  const fill = new THREE.Mesh(
+    new THREE.PlaneGeometry(1, 1),
+    new THREE.MeshBasicMaterial({
+      color: 0x6ee7ff,
+      transparent: true,
+      opacity: 0.3,
+      depthTest: false,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    })
+  );
+  fill.rotation.x = -Math.PI / 2;
+  fill.renderOrder = 9;
+  guide.add(fill);
+
+  const half = 0.5;
+  const corners = new Float32Array([
+    -half, 0, -half,
+    half, 0, -half,
+    half, 0, half,
+    -half, 0, half
+  ]);
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(corners, 3));
+
+  const outline = new THREE.LineLoop(
+    geometry,
+    new THREE.LineBasicMaterial({ color: 0xdffaff, transparent: true, opacity: 0.95, depthTest: false })
+  );
+  outline.renderOrder = 10;
+  guide.add(outline);
+
+  guide.visible = false;
+  return guide;
+}
+
 const easeIn = (t) => t * t;
 const easeOut = (t) => 1 - (1 - t) * (1 - t);
 
@@ -23,6 +69,9 @@ export class Game {
 
     this.ufo = createUfo();
     world.scene.add(this.ufo.group);
+
+    this.landingGuide = createLandingGuide();
+    world.scene.add(this.landingGuide);
 
     this.focus = new THREE.Vector3(0, 2.5, 0);
     this.ufoTarget = new THREE.Vector3();
@@ -262,6 +311,7 @@ export class Game {
 
   update(dt, time) {
     this.updateCarried(dt);
+    this.updateLandingGuide();
     this.updateDropping(dt);
     this.updateDebris(dt);
     this.updateEffects(dt);
@@ -284,6 +334,36 @@ export class Game {
       position[axis] = centre - travel;
       this.moving.direction = 1;
     }
+  }
+
+  /** Draws the slice that would survive a drop at the floor's current position. */
+  updateLandingGuide() {
+    if (!this.moving) {
+      this.landingGuide.visible = false;
+      return;
+    }
+
+    const top = this.topFloor();
+    const { axis } = this.moving;
+    const size = axis === 'x' ? top.w : top.d;
+    const centre = axis === 'x' ? top.cx : top.cz;
+    const offset = this.moving.mesh.position[axis] - centre;
+    const overlap = size - Math.abs(offset);
+
+    this.landingGuide.visible = overlap > CONFIG.missThreshold;
+    if (!this.landingGuide.visible) return;
+
+    const landing = centre + offset / 2;
+    this.landingGuide.scale.set(
+      axis === 'x' ? overlap : this.moving.w,
+      1,
+      axis === 'x' ? this.moving.d : overlap
+    );
+    this.landingGuide.position.set(
+      axis === 'x' ? landing : top.cx,
+      top.y + CONFIG.floorHeight / 2 + 0.012,
+      axis === 'x' ? top.cz : landing
+    );
   }
 
   updateDropping(dt) {

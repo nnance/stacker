@@ -28,6 +28,9 @@ relative so it can be hosted from any subdirectory) and check it with
 - **Slicing** — the overlap between the carried floor and the one below it
   becomes the new floor. The overhang is cut loose and falls away, so a sloppy
   drop makes the tower narrower and every later drop harder.
+- **Landing guide** — the glowing patch shows the footprint that would survive a
+  drop right now. The camera looks down at an angle, so a floor in mid-air never
+  lines up on screen with the one below it; keep the patch as wide as you can.
 - **Perfect drops** — land within a whisker of dead centre and nothing is cut.
   Three perfect drops in a row start giving footprint back, so a good run can
   recover.
